@@ -6,9 +6,9 @@ import com.example.louyulin.kotlinweather.logic.model.Place
 import com.example.louyulin.kotlinweather.logic.network.SunnyWeatherNetWork
 import kotlinx.coroutines.Dispatchers
 import java.lang.RuntimeException
-
+//仓库层代码
 object Repository {
-    //仓库层代码
+
     fun searchPlace(query: String): LiveData<Result<List<Place>>> {
         return liveData(Dispatchers.IO) {
             val result = try {
