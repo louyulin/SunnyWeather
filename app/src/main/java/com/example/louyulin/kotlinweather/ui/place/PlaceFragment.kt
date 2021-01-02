@@ -1,6 +1,8 @@
 package com.example.louyulin.kotlinweather.ui.place
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +12,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.louyulin.kotlinweather.MainActivity
 import com.example.louyulin.kotlinweather.R
+import com.example.louyulin.kotlinweather.logic.Repository
+import com.example.louyulin.kotlinweather.ui.weather.WeatherActivity
 import kotlinx.android.synthetic.main.fragment_place.*
+import kotlinx.android.synthetic.main.place_item.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class PlaceFragment : Fragment() {
-    val viewModel by lazy {
+     val viewModel by lazy {
         ViewModelProviders.of(this)
             .get(PlaceViewModel::class.java)
     }
@@ -31,10 +41,21 @@ class PlaceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        if (activity is MainActivity && viewModel.isPlaceSaved()){
+            val place = viewModel.getSavePlace()
+            val intent = Intent(context, WeatherActivity::class.java).apply {
+                putExtra("location_lng", place.location.lng)
+                putExtra("location_lat", place.location.lat)
+                putExtra("place_name", place.name)
+            }
+            startActivity(intent)
+            activity?.finish()
+        }
         val linearLayoutManager = LinearLayoutManager(this.activity)
         recyclerview.layoutManager = linearLayoutManager
         adapter = PlaceAdapter(this, viewModel.placeList)
         recyclerview.adapter = adapter
+
         searchPlaceEdit.addTextChangedListener{
             it ->
             val content = it.toString()
